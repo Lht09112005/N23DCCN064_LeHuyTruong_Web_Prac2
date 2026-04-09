@@ -32,12 +32,58 @@ const swaggerSpec = swaggerJsdoc({
       description: "API quản lý đơn hàng - Lab 2",
     },
     servers: [{ url: "http://localhost:3002", description: "Development" }],
+    components: {
+      schemas: {
+        OrderItem: {
+          type: "object",
+          properties: {
+            productId: { type: "integer", example: 1 },
+            productName: { type: "string", example: "iPhone 15 Pro" },
+            price: { type: "number", example: 27990000 },
+            quantity: { type: "integer", example: 1 },
+            subtotal: { type: "number", example: 27990000 },
+          },
+        },
+        Order: {
+          type: "object",
+          properties: {
+            _id: { type: "string", example: "65f1a2b3c4d5e6f7a8b9c0d1" },
+            orderCode: { type: "string", example: "ORD-20260409-0001" },
+            customerId: { type: "integer", example: 1 },
+            customerName: { type: "string", example: "Nguyễn Văn A" },
+            customerEmail: { type: "string", example: "test@gmail.com" },
+            items: {
+              type: "array",
+              items: { $ref: "#/components/schemas/OrderItem" },
+            },
+            totalAmount: { type: "number", example: 27990000 },
+            status: {
+              type: "string",
+              enum: [
+                "pending",
+                "confirmed",
+                "shipping",
+                "delivered",
+                "cancelled",
+              ],
+            },
+            shippingAddress: {
+              type: "object",
+              properties: {
+                street: { type: "string" },
+                city: { type: "string" },
+                district: { type: "string" },
+              },
+            },
+            note: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+      },
+    },
   },
   apis: ["./src/routes/*.js"],
 });
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get("/api-docs.json", (req, res) => res.json(swaggerSpec));
 
 // Health check
 app.get("/health", (req, res) =>
