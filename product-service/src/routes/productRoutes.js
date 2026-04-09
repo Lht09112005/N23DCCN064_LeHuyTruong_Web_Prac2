@@ -76,4 +76,33 @@ router.get("/:id", getProductById);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
 
+const { upload } = require("../middleware/upload");
+const { uploadImage } = require("../controllers/productController");
+
+/**
+ * @swagger
+ * /api/products/{id}/image:
+ *   post:
+ *     summary: Upload ảnh sản phẩm
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Upload thành công
+ */
+router.post("/:id/image", upload.single("image"), uploadImage);
 module.exports = router;

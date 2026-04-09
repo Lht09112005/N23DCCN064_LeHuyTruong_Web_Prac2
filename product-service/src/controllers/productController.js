@@ -121,6 +121,27 @@ const deleteProduct = async (req, res, next) => {
     next(error);
   }
 };
+const uploadImage = async (req, res) => {
+  try {
+    if (!req.file)
+      return res.status(400).json({ success: false, message: "Chưa chọn ảnh" });
+
+    const product = await prisma.product.update({
+      where: { id: parseInt(req.params.id) },
+      data: { imageUrl: req.file.path },
+      include: { category: true },
+    });
+
+    res.json({
+      success: true,
+      data: product,
+      message: "Upload ảnh thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   getProducts,
@@ -128,4 +149,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  uploadImage,
 };

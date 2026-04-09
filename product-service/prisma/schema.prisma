@@ -3,21 +3,34 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-  schemas   = ["auth_service"]
+  provider = "postgresql"
 }
 
-model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  password     String
-  name         String
-  role         String    @default("user")
-  refreshToken String?   @map("refresh_token")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  products    Product[]
+  @@map("categories")
+}
 
-  @@map("users")
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  price       Float
+  stock       Int       @default(0)
+  imageUrl    String?   @map("image_url")
+  isActive    Boolean   @default(true) @map("is_active")
+  categoryId  Int?      @map("category_id")
+  category    Category? @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("products")
 }
