@@ -3,12 +3,14 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
+
+# Hạ Prisma xuống v5 cho Railway
 RUN npm install
+RUN npm install prisma@5 @prisma/client@5
 
 COPY prisma ./prisma
-COPY prisma.config.ts ./
 
-RUN npx tsx node_modules/.bin/prisma generate
+RUN npx prisma generate
 
 COPY src ./src
 
