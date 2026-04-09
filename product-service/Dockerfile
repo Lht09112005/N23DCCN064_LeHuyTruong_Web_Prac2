@@ -8,7 +8,7 @@ RUN npm install
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 
-RUN npx prisma generate
+RUN npx tsx node_modules/.bin/prisma generate
 
 COPY src ./src
 
