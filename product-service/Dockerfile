@@ -1,15 +1,14 @@
 FROM node:20-alpine
 
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 COPY package*.json ./
-
-# Hạ Prisma xuống v5 cho Railway
 RUN npm install
 RUN npm install prisma@5 @prisma/client@5
 
 COPY prisma ./prisma
-
 RUN npx prisma generate
 
 COPY src ./src
