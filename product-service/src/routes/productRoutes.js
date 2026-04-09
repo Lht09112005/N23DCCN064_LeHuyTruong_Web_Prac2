@@ -5,8 +5,11 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  uploadImage,
 } = require("../controllers/productController");
 const { productValidation } = require("../middleware/validate");
+const { upload } = require("../middleware/upload");
+const { cacheMiddleware, clearCache } = require("../middleware/cache");
 
 /**
  * @swagger
@@ -43,7 +46,7 @@ const { productValidation } = require("../middleware/validate");
  *       200:
  *         description: Thành công
  */
-router.get("/", getProducts);
+router.get("/", cacheMiddleware(300), getProducts);
 
 /**
  * @swagger
@@ -70,14 +73,22 @@ router.get("/", getProducts);
  *       422:
  *         description: Dữ liệu không hợp lệ
  */
-router.post("/", productValidation, createProduct);
+router.post("/", productValidation, async (req, res, next) => {
+  await clearCache();
+  return createProduct(req, res, next);
+});
 
-router.get("/:id", getProductById);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.get("/:id", cacheMiddleware(300), getProductById);
 
-const { upload } = require("../middleware/upload");
-const { uploadImage } = require("../controllers/productController");
+router.put("/:id", async (req, res, next) => {
+  await clearCache();
+  return updateProduct(req, res, next);
+});
+
+router.delete("/:id", async (req, res, next) => {
+  await clearCache();
+  return deleteProduct(req, res, next);
+});
 
 /**
  * @swagger
@@ -104,5 +115,9 @@ const { uploadImage } = require("../controllers/productController");
  *       200:
  *         description: Upload thành công
  */
-router.post("/:id/image", upload.single("image"), uploadImage);
+router.post("/:id/image", upload.single("image"), async (req, res, next) => {
+  await clearCache();
+  return uploadImage(req, res, next);
+});
+
 module.exports = router;

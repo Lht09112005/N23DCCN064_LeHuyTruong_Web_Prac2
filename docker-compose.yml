@@ -41,6 +41,13 @@ services:
       - "27017:27017"
     networks: [microservices-net]
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    networks: [microservices-net]
+
   # ─── Application Services ─────────────────
   product-service:
     build: ./product-service
@@ -51,6 +58,7 @@ services:
       SERVICE_NAME: product-service
       DATABASE_URL: postgresql://admin:secret@postgres:5432/products_db
       DIRECT_URL: postgresql://admin:secret@postgres:5432/products_db
+      REDIS_URL: redis://redis:6379
     ports:
       - "3001:3001"
     depends_on:
@@ -80,6 +88,8 @@ services:
       PORT: 3000
       PRODUCT_SERVICE_URL: http://product-service:3001
       ORDER_SERVICE_URL: http://order-service:3002
+      AUTH_SERVICE_URL: http://auth-service:3003
       ALLOWED_ORIGINS: "*"
+      JWT_SECRET: your-super-secret-random-string-at-least-32-chars-lab2
     depends_on: [product-service, order-service]
     networks: [microservices-net]
