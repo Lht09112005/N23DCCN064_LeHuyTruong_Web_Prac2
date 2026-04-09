@@ -1,8 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
-const { PrismaPg } = require("@prisma/adapter-pg");
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 const getProducts = async (req, res, next) => {
   try {
@@ -88,13 +86,11 @@ const createProduct = async (req, res, next) => {
       include: { category: true },
     });
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: product,
-        message: "Tạo sản phẩm thành công",
-      });
+    res.status(201).json({
+      success: true,
+      data: product,
+      message: "Tạo sản phẩm thành công",
+    });
   } catch (error) {
     next(error);
   }
