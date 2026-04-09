@@ -3,9 +3,12 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
+RUN npm install
+
 COPY prisma ./prisma
 COPY prisma.config.ts ./
-COPY node_modules ./node_modules
+
+RUN npx prisma generate
 
 COPY src ./src
 
